@@ -27,8 +27,6 @@ export default async function CustomerSingle({
 }) {
   const [customerPost] = await getContentForCustomerPost(params.slug);
 
-  console.log(customerPost);
-
   return (
     <section className="relative">
       {/* Radial gradient */}
