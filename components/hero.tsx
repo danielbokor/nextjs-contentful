@@ -1,10 +1,13 @@
 import Illustration from "@/public/images/glow-bottom.svg";
+import { draftMode } from "next/headers";
 import Image from "next/image";
 import { getContentForHeroes } from "../content/queries";
 import Particles from "./particles";
 
 export default async function Hero() {
-  const [content] = await getContentForHeroes();
+  const isDraft = draftMode().isEnabled;
+
+  const [content] = await getContentForHeroes(isDraft);
   const [button1, button2] = content.buttonsCollection.items;
 
   return (

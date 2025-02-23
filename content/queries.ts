@@ -79,10 +79,10 @@ export const getContentForLogoWall = async () => {
   return data?.logoWallCollectionCollection.items;
 };
 
-export const getContentForHeroes = async () => {
+export const getContentForHeroes = async (isDraft = false) => {
   const query = `#graphql
    query ExampleQuery {
-      heroCollection {
+      heroCollection (preview: ${isDraft ? "true" : "false"}) {
         items {
           title
           subtitle
@@ -98,7 +98,7 @@ export const getContentForHeroes = async () => {
     }
   `;
 
-  const data = await contentGqlFetcher<HeroQuery>({ query });
+  const data = await contentGqlFetcher<HeroQuery>({ query, preview: isDraft });
 
   if (!data) {
     throw new Error("Failed to fetch heroes");
