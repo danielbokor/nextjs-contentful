@@ -1,5 +1,11 @@
 import "server-only";
-import { HeroQuery, LogoWallCollectionQuery, NavigationQuery } from "../type";
+import {
+  CustomerPostQuery,
+  CustomerPostSlugsQuery,
+  HeroQuery,
+  LogoWallCollectionQuery,
+  NavigationQuery,
+} from "../type";
 import { contentGqlFetcher } from "./fetch";
 
 export const getContentForNavigation = async (name: string) => {
@@ -99,4 +105,87 @@ export const getContentForHeroes = async () => {
   }
 
   return data?.heroCollection.items;
+};
+
+export const getContentForCustomerPost = async (slug: string) => {
+  const query = `#graphql
+  query CustomerPostCollection($where: CustomerPostFilter) {
+    customerPostCollection(where: $where) {
+      items {
+        title
+        slug
+        customer {
+          name
+          logo {
+            title
+            url
+            width
+            height
+          }
+          badge {
+            title
+            description
+            width
+            height
+            url
+          }
+          location
+          industry
+          impact
+          product
+          website
+        }
+        body {
+          json
+        }
+        author {
+          name
+          role
+          profilePhoto {
+            url
+            title
+            height
+            width
+            description
+          }
+        }
+      }
+    }
+  }
+  `;
+
+  const data = await contentGqlFetcher<CustomerPostQuery>({
+    query,
+    variables: {
+      where: {
+        slug,
+      },
+    },
+  });
+
+  if (!data) {
+    throw new Error("Failed to fetch customer post");
+  }
+
+  return data?.customerPostCollection.items;
+};
+
+export const getCustomerPostSlugs = async () => {
+  const query = `#graphql
+  query CustomerPostCollection {
+    customerPostCollection {
+      items {
+        slug
+      }
+    }
+  }
+  `;
+
+  const data = await contentGqlFetcher<CustomerPostSlugsQuery>({ query });
+
+  if (!data) {
+    throw new Error("Failed to fetch customer post slugs");
+  }
+
+  return data?.customerPostCollection.items.map((item) => item.slug);
 };
