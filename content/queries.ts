@@ -1,5 +1,39 @@
-import { HeroQuery, LogoWallCollectionQuery } from "../type";
+import "server-only";
+import { HeroQuery, LogoWallCollectionQuery, NavigationQuery } from "../type";
 import { contentGqlFetcher } from "./fetch";
+
+export const getContentForNavigation = async (name: string) => {
+  const query = `#graphql
+    query NavigationCollection($where: NavigationFilter) {
+      navigationCollection(where: $where) {
+        items {
+          name
+          linksCollection {
+            items {
+              label
+              link
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const data = await contentGqlFetcher<NavigationQuery>({
+    query,
+    variables: {
+      where: {
+        name,
+      },
+    },
+  });
+
+  if (!data) {
+    throw new Error("Failed to fetch navigation");
+  }
+
+  return data?.navigationCollection.items;
+};
 
 export const getContentForLogoWall = async () => {
   const query = `#graphql
@@ -35,8 +69,6 @@ export const getContentForLogoWall = async () => {
   if (!data) {
     throw new Error("Failed to fetch logo wall");
   }
-
-  console.log({ data });
 
   return data?.logoWallCollectionCollection.items;
 };

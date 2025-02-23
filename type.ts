@@ -35,3 +35,17 @@ export type LogoWallItem = {
     height: number;
   };
 };
+
+export type NavigationQuery = {
+  navigationCollection: {
+    items: {
+      title: string;
+      linksCollection: {
+        items: {
+          link: string;
+          label: string;
+        }[];
+      };
+    }[];
+  };
+};
